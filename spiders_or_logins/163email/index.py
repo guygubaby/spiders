@@ -22,14 +22,11 @@ class Email163:
         acount=self.browser.find_element_by_name('email')
         acount.clear()
         acount.send_keys(self.account_num)
-
         passwd=self.browser.find_element_by_name('password')
         passwd.clear()
         passwd.send_keys(self.passwd_str)
-
         login_btn=self.browser.find_element_by_id('dologin')
         login_btn.click()
-
         time.sleep(5)
         cookie=self.browser.get_cookies()[0]
         return cookie
@@ -39,3 +36,8 @@ if __name__ == '__main__':
     email=Email163()
     cookie=email.login()
     print(cookie)
+    if cookie['value']=='':
+        print('login failed , please try again')
+        email.browser.close()
+    else:
+        print('login success')
