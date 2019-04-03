@@ -25,8 +25,8 @@ if __name__ == '__main__':
         json_str=res.json()
         for movie in json_str['subjects']:
             img_res=requests.get(movie['cover'])
-            img_name=movie['title']+movie['rate']
+            img_name=movie['title']+' - '+movie['rate']
             img_format=movie['cover'].split('/')[-1].split('.')[1]
             print(f'current movie is : {img_name}')
-            with open(f'../movies/{img_name}.{img_format}','wb') as f:
+            with open(f'../imgs/douban_movies/{img_name}.{img_format}','wb') as f:
                 f.write(img_res.content)

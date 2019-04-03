@@ -1,45 +1,52 @@
-from PIL import Image
 import requests
 from bs4 import BeautifulSoup
-import http.cookiejar as cookielib
-from os import remove
 
 
 class Douban:
-    url = 'https://accounts.douban.com/login'
-    datas = {'source': 'index_nav',
-             'remember': 'on'}
-    headers = {'Host': 'www.douban.com',
-               'Referer': 'https://www.douban.com/',
-               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:55.0) Gecko/20100101 Firefox/55.0',
-               'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-               'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
-               'Accept-Encoding': 'gzip, deflate, br'}
+    url = 'https://accounts.douban.com/j/mobile/login/basic'
+    headers = {
+        'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+        'Referer':'https://accounts.douban.com/passport/login_popup?login_source=anony'
+    }
+    session=requests.session()
+    data={
+        'ck':'',
+        'remember': 'false',
+        'ticket':''
+    }
 
     def __init__(self):
-        self.session=requests.session()
-        self.session.cookies=cookielib.LWPCookieJar(filename='cookies')
-        try:
-            self.session.cookies.load(ignore_discard=True)
-        except:
-            print('cookies load faild login please')
-            self.datas['form_email']=input('please input your phone')
-            self.datas['form_password']=input('please input your password')
+        self.data['name']=input('phone number here : ')
+        self.data['password']=input('password then : ')
 
-    def get_capcha(self):
-        '''
-        获取验证码及其ID
-        :return:
-        '''
+    def login(self):
+        login_res = self.session.post(url=self.url, headers=self.headers, data=self.data).json()
+        login_status=login_res['status']
+        if login_status=='success':
+            self.account_info=login_res['payload']['account_info']
+            self.id=self.account_info['id']
+            print(f"login success , your name is {self.account_info['name']}")
+        else:
+            print(f"login failed with reasons here {login_res['description']}")
 
-        res=requests.post(self.url,data=self.datas,headers=self.headers)
-        html_str=res.text
-        print(html_str)
-        # soup=BeautifulSoup(html_str,'html.parser')
-        # 利用bs4获得验证码图片地址
+    def get_user_statuses(self):
+        url=f'https://www.douban.com/people/{self.id}/statuses'
+        self.headers['Referer']=url
+        statuses_res=self.session.get(url=url,headers=self.headers).text
+        soup=BeautifulSoup(statuses_res,'html.parser')
+        new_status=soup.find_all('div',class_='new-status')
+        movie_item={}
+        movies=[]
+        for status in new_status:
+            title=status.find('a',class_='media')['title']
+            movie_item['name']=title
+            movies.append(movie_item)
+        return movies
 
 
 if __name__ == '__main__':
     douban=Douban()
-    douban.get_capcha()
-
+    douban.login()
+    movies=douban.get_user_statuses()
+    for movie in movies:
+        print(movie.get('name'))
