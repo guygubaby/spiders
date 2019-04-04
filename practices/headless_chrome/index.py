@@ -33,8 +33,15 @@ class HeadlessChrome:
         print(f'searching {search_str} ...')
         time.sleep(3)
 
+        js_str='''
+            const suEl=document.getElementById('su');
+            suEl.style.backgroundColor='red';
+        '''
+        self.driver.execute_script(js_str)
+
         self.driver.save_screenshot(f'search_{search_str}.png')
-        self.driver.close()
+        # self.driver.close() # Close the current window, quitting the browser if it's the last window currently open.
+        self.driver.quit() # Quits this driver, closing every associated window.
         print('search complete : ) ，go to current folder to see the screen shot')
 
 
