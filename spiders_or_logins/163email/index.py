@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from selenium import webdriver
 import time
 
@@ -41,3 +42,5 @@ if __name__ == '__main__':
         email.browser.close()
     else:
         print('login success')
+        time.sleep(10)
+        email.browser.close()
