@@ -1,0 +1,44 @@
+[
+  {
+    "id": 105795,
+    "name": "澳门特别行政区",
+    "parentId": 562,
+    "code": "330100000",
+    "isSelected": false
+  },
+  {
+    "id": 723,
+    "name": "安阳",
+    "parentId": 545,
+    "code": "171500000",
+    "isSelected": false
+  },
+  {
+    "id": 671,
+    "name": "安庆",
+    "parentId": 541,
+    "code": "131800000",
+    "isSelected": false
+  },
+  {
+    "id": 601,
+    "name": "鞍山",
+    "parentId": 535,
+    "code": "081600000",
+    "isSelected": false
+  },
+  {
+    "id": 862,
+    "name": "安康",
+    "parentId": 556,
+    "code": "270400000",
+    "isSelected": false
+  },
+  {
+    "id": 825,
+    "name": "安顺",
+    "parentId": 553,
+    "code": "240400000",
+    "isSelected": false
+  }
+]
