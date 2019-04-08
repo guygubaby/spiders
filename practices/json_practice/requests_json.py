@@ -1,5 +1,6 @@
 import requests,json
 
+
 def get_json():
     url='http://www.lagou.com/lbs/getAllCitySearchLabels.json'
     headers={
@@ -7,7 +8,8 @@ def get_json():
     }
 
     res=requests.get(url,headers=headers)
-    return res.text
+    # 在获取网页的html代码时常常使用res的text属性: html = res.text，在下载图片或文件时常常使用res的content属性:
+    return res.content
 
 
 def read_json_file(file_path):
@@ -19,12 +21,9 @@ def read_json_file(file_path):
 if __name__ == '__main__':
     json_str=get_json()
     data=json.loads(json_str)
-    print(data)
     citys=data['content']['data']['allCitySearchLabels']['A']
-    print(citys)
     with open('cities.json','w',encoding='utf-8') as f:
         json.dump(citys,f,ensure_ascii=False,indent=2)
-
 
     file_res=read_json_file('cities.json')
     print(file_res)
