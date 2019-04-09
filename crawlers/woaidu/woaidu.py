@@ -1,4 +1,4 @@
-import requests,random,json
+import requests,random,json,os
 from bs4 import BeautifulSoup
 
 
@@ -69,7 +69,7 @@ class WoaiDu:
 
     def get_random_user_agent(self,times=20):
         if len(self.user_agent_list) == 0:
-            with open('../utils/user_agents.txt','r') as f:
+            with open('./user_agents.txt','r') as f:
                 self.user_agent_list=f.readlines()
         user_agent_str = self.user_agent_list[
             random.randint(0, times if len(self.user_agent_list) > times else len(self.user_agent_list))]
@@ -79,9 +79,9 @@ class WoaiDu:
 
 
 if __name__ == '__main__':
-    woaidu=WoaiDu(3)
+    woaidu=WoaiDu(1)
     woaidu.crawl()
-    with open('woaidu.json','w',encoding='utf-8') as f:
+    with open('./woaidu/woaidu.json','w',encoding='utf-8') as f:
         json.dump(woaidu.res_list,f,ensure_ascii=False,indent=2)
     print('ok :)')
     print(f'finally get {len(woaidu.res_list)} articles')
