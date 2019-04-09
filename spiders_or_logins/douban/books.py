@@ -1,5 +1,7 @@
 import requests,time,json
 from bs4 import BeautifulSoup
+from itertools import chain
+from functools import reduce
 
 
 class BookSpider:
@@ -13,12 +15,15 @@ class BookSpider:
 
     res_list=[]
 
-    def __init__(self,book_type='机器学习',end_count=100):
-        self.book_type=book_type
+    def __init__(self,book_types=('机器学习','小说'),end_count=40):
+        self.book_types=book_types
         self.end_count=end_count
 
     def init_urls(self):
-        return [self.url_template.format(self.book_type,start) for start in range(0,self.end_count,20)]
+        urls=[]
+        for type in self.book_types:
+            urls.append([self.url_template.format(type,start) for start in range(0,self.end_count,20)])
+        return list(chain.from_iterable(urls))
 
     def crawl(self):
         urls=self.init_urls()
@@ -57,10 +62,11 @@ class BookSpider:
 
 
 if __name__ == '__main__':
-    book_spider=BookSpider(end_count=20)
+    book_spider=BookSpider()
     book_spider.crawl()
     data=book_spider.res_list
-    with open(f'{book_spider.book_type}-books-total-{len(data)}.json','w',encoding='utf-8') as f:
+    json_name_prefix=reduce(lambda prev,next:f'{prev}-{next}',book_spider.book_types)
+    with open(f'{json_name_prefix}-books-total-{len(data)}.json','w',encoding='utf-8') as f:
         json.dump(data,f,ensure_ascii=False,indent=2)
     print('all done :) ')
 
