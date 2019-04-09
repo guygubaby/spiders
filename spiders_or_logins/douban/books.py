@@ -54,7 +54,7 @@ class BookSpider:
                 book_info['rate_count']=rate_count
                 book_info['short_desc']=short_desc
             except Exception as e:
-                print(f'some errors accure {e}')
+                print(f'some errors occur : {e}')
                 continue
 
             self.res_list.append(book_info)
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     book_spider.crawl()
     data=book_spider.res_list
     json_name_prefix=reduce(lambda prev,next:f'{prev}-{next}',book_spider.book_types)
-    with open(f'{json_name_prefix}-books-total-{len(data)}.json','w',encoding='utf-8') as f:
+    with open(f'book_list-{json_name_prefix}-books-total-{len(data)}.json','w',encoding='utf-8') as f:
         json.dump(data,f,ensure_ascii=False,indent=2)
     print('all done :) ')
 
