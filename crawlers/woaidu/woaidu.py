@@ -39,7 +39,8 @@ class WoaiDu:
                     addition_info=self.session.get(url=addition_info_url,verify=False)
                     addition_info.encoding='utf-8'
                     addition_soup=BeautifulSoup(addition_info.text,'html.parser')
-                    img_url=addition_soup.find('div',class_='hong').find('img')['src']
+                    img_url_temp=addition_soup.find('div',class_='hong').find('img')['src']
+                    img_url=f'https://www.woaidu.org/{img_url_temp}' if 'no_images' in img_url_temp else img_url_temp
                     description=addition_soup.find('div',class_='lili').string.strip()
                     last_edit_time=addition_soup.find('div',class_='jiewei').string.strip()
                     author=addition_soup.find('div',class_='xiaoxiao').string.strip()
@@ -55,11 +56,17 @@ class WoaiDu:
 
                     article_info['title']=info.string.strip()
                     article_info['author']=author
-                    article_info['img_url']=f'https://www.woaidu.org/{img_url}' if 'no_images' in img_url else img_url
+                    article_info['img_url']=img_url
                     article_info['description']=description
                     article_info['last_edit_time']=last_edit_time
                     article_info['url']=addition_info_url
                     article_info['download_urls']=urls
+
+                    img_res=self.session.get(url=img_url,verify=False).content
+                    img_format=img_url.split('.')[-1]
+                    with open(f"./woaidu/imgs/{article_info['title']}.{img_format}",'wb') as f:
+                        f.write(img_res)
+
                 except:
                     continue
 
