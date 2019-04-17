@@ -24,6 +24,7 @@ if __name__ == '__main__':
     start_time=time.time()
     print(f'start time is : {start_time}')
     for i in range(30):
+        run_task(i) # 0.004734039306640625
         my_thread=MyThread(i)
         my_thread.start()
         # my_thread.join() # ensure the main thread last quit

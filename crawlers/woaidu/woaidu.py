@@ -1,5 +1,6 @@
 import requests,random,json,os
 from bs4 import BeautifulSoup
+from pymongo import MongoClient
 
 
 class WoaiDu:
@@ -9,6 +10,9 @@ class WoaiDu:
     user_agent_list=[]
 
     res_list=[]
+
+    mongo_client=MongoClient('127.0.0.1',27017)
+    woaidu_db=mongo_client.mydb.woaidu
 
     def __init__(self,end_page=100):
         self.end_page=end_page
@@ -64,19 +68,20 @@ class WoaiDu:
 
                     img_res=self.session.get(url=img_url,verify=False).content
                     img_format=img_url.split('.')[-1]
-                    with open(f"./woaidu/imgs/{article_info['title']}.{img_format}",'wb') as f:
+                    with open(f"./imgs/{article_info['title']}.{img_format}",'wb') as f:
                         f.write(img_res)
 
-                except:
-                    continue
+                except Exception as e:
+                    print('error',e)
 
                 self.res_list.append(article_info)
                 article_info={}
                 urls=[]
+            # print(len(self.res_list))
 
     def get_random_user_agent(self,times=20):
         if len(self.user_agent_list) == 0:
-            with open('./user_agents.txt','r') as f:
+            with open('../user_agents.txt','r') as f:
                 self.user_agent_list=f.readlines()
         user_agent_str = self.user_agent_list[
             random.randint(0, times if len(self.user_agent_list) > times else len(self.user_agent_list))]
@@ -88,7 +93,9 @@ class WoaiDu:
 if __name__ == '__main__':
     woaidu=WoaiDu(1)
     woaidu.crawl()
-    with open('./woaidu/woaidu.json','w',encoding='utf-8') as f:
-        json.dump(woaidu.res_list,f,ensure_ascii=False,indent=2)
+    # print('length->',len(woaidu.res_list))
+    woaidu.woaidu_db.insert_many(woaidu.res_list) # save data to mongodb
+    # with open('./woaidu/woaidu.json','w',encoding='utf-8') as f:
+    #     json.dump(woaidu.res_list,f,ensure_ascii=False,indent=2)
     print('ok :)')
     print(f'finally get {len(woaidu.res_list)} articles')

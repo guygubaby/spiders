@@ -1,0 +1,8 @@
+version: "3"
+services:
+  service.mongo:
+    build: .
+    ports:
+      - "27017:27017"
+    volumes:
+      - "$PWD/data:/data/db"
