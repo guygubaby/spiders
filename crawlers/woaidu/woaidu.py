@@ -71,12 +71,12 @@ class WoaiDu:
 
                     img_res=self.session.get(url=img_url,verify=False).content
                     img_format=img_url.split('.')[-1]
-                    img_name=f"./imgs/{article_info['title']}.{img_format}" if '\\' not in addition_info['title'] else f"./imgs/{article_info['title']}.{img_format}"
+                    img_name=f"./imgs/{article_info['title']}.{img_format}" if '/' not in addition_info['title'] else f"./imgs/{article_info['title']}.{img_format}"
                     with open(img_name,'wb') as f:
                         f.write(img_res)
 
                 except Exception as e:
-                    print('error',e)
+                    continue
 
                 self.res_list.append(article_info)
                 article_info={}
@@ -98,14 +98,9 @@ if __name__ == '__main__':
     end_page=2
     woaidu=WoaiDu(end_page)
     woaidu.crawl()
-    p=Pool(end_page)
-    for i in range(end_page):
-        p.apply_async(woaidu.crawl(),args=())
-    p.close()
-    p.join()
     print('length->',len(woaidu.res_list))
-    # woaidu.woaidu_db.insert_many(woaidu.res_list) # save data to mongodb
-    with open('./woaidu/woaidu.json','w',encoding='utf-8') as f:
-        json.dump(woaidu.res_list,f,ensure_ascii=False,indent=2)
+    woaidu.woaidu_db.insert_many(woaidu.res_list) # save data to mongodb
+    # with open('./woaidu/woaidu.json','w',encoding='utf-8') as f:
+    #     json.dump(woaidu.res_list,f,ensure_ascii=False,indent=2)
     print('ok :)')
     print(f'finally get {len(woaidu.res_list)} articles')
