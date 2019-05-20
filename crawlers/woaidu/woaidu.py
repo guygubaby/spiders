@@ -2,7 +2,8 @@ import requests,random,json,os
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 
-from multiprocessing import Pool
+import multiprocessing as mp
+import asyncio
 
 
 class WoaiDu:
@@ -13,8 +14,8 @@ class WoaiDu:
 
     res_list=[]
 
-    mongo_client=MongoClient('127.0.0.1',27017)
-    woaidu_db=mongo_client.mydb.woaidu
+    # mongo_client=MongoClient('127.0.0.1',27017)
+    # woaidu_db=mongo_client.mydb.woaidu
 
     def __init__(self,end_page=100):
         self.end_page=end_page
@@ -95,11 +96,20 @@ class WoaiDu:
 
 
 if __name__ == '__main__':
-    end_page=2
+    pool=mp.Pool(mp.cpu_count())
+
+    end_page=5
     woaidu=WoaiDu(end_page)
-    woaidu.crawl()
+
+    for i in range(5):
+        pool.apply_async(woaidu.crawl)
+
+    pool.close()
+    pool.join()
+
+    # woaidu.crawl()
     print('length->',len(woaidu.res_list))
-    woaidu.woaidu_db.insert_many(woaidu.res_list) # save data to mongodb
+    # woaidu.woaidu_db.insert_many(woaidu.res_list) # save data to mongodb
     # with open('./woaidu/woaidu.json','w',encoding='utf-8') as f:
     #     json.dump(woaidu.res_list,f,ensure_ascii=False,indent=2)
     print('ok :)')
